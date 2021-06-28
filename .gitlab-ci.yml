@@ -3,5 +3,6 @@ stages:
 
 gotest:
   image: golang:1.16
+  stage: test
   script:
   - go test ./... -v -cover
