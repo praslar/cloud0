@@ -70,6 +70,9 @@ func ErrorHandler(c *gin.Context) {
 
 		// we might need to log/write errors later, just respond last error now
 		err := c.Errors.Last().Err
+
+		l.WithError(err).Debug("handle error")
+
 		code := http.StatusInternalServerError
 		if v, ok := err.(ApiError); ok {
 			code = v.Code()

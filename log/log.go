@@ -1,6 +1,7 @@
 package log
 
 import (
+	"context"
 	"os"
 
 	"github.com/sirupsen/logrus"
@@ -35,11 +36,19 @@ func Tag(tag string) *logrus.Entry {
 	return logrus.WithField("tag", tag)
 }
 
-// TagWithCtx return a log entry from tag name & x-request-id in Gin context if has
-func TagWithCtx(tag string, ctx GetStringer) *logrus.Entry {
+// TagWithGetString return a log entry from tag name & x-request-id in Gin context if has
+func TagWithGetString(tag string, ctx GetStringer) *logrus.Entry {
 	l := Tag(tag)
 	if requestID := ctx.GetString(HeaderXRequestID); requestID != "" {
 		l = l.WithField(HeaderXRequestID, requestID)
+	}
+	return l
+}
+
+func WithCtx(ctx context.Context, tag string) *logrus.Entry {
+	l := Tag(tag)
+	if requestID := ctx.Value("x-request-id").(string); requestID != "" {
+		l = l.WithField("x-request-id", requestID)
 	}
 	return l
 }
