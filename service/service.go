@@ -2,13 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
-	"sync"
 	"syscall"
 	"time"
 
@@ -16,8 +16,10 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/gin-gonic/gin"
+	"gitlab.com/goxp/cloud0/db"
 	"gitlab.com/goxp/cloud0/ginext"
 	"gitlab.com/goxp/cloud0/log"
+	"gorm.io/gorm"
 )
 
 type BaseApp struct {
@@ -27,8 +29,7 @@ type BaseApp struct {
 	Router     *gin.Engine
 	HttpServer *http.Server
 
-	listener net.Listener
-
+	listener               net.Listener
 	initialized            bool
 	healthEndpointDisabled bool
 }
@@ -67,7 +68,14 @@ func (app *BaseApp) Initialize() error {
 
 	// register routes
 	if !app.healthEndpointDisabled {
-		app.Router.GET("/", app.HealthHandler)
+		app.Router.GET("/status", app.HealthHandler())
+	}
+
+	if app.Config.EnableDB {
+		err := db.OpenDefault(&app.Config.DBConfig)
+		if err != nil {
+			return errors.New("failed to open default DB: " + err.Error())
+		}
 	}
 
 	app.initialized = true
@@ -75,43 +83,50 @@ func (app *BaseApp) Initialize() error {
 	return nil
 }
 
-func (app *BaseApp) HealthHandler(c *gin.Context) {
+// HealthHandler makes health check handler
+func (app *BaseApp) HealthHandler() gin.HandlerFunc {
 	rsp := struct {
-		Name    string `json:"name"`
-		Version string `json:"version"`
+		Name     string `json:"name"`
+		Version  string `json:"version"`
+		Hostname string `json:"hostname"`
 	}{
 		Name:    app.Name,
 		Version: app.Version,
 	}
-	c.JSON(http.StatusOK, rsp)
+	rsp.Hostname, _ = os.Hostname()
+
+	return func(c *gin.Context) {
+		c.JSON(http.StatusOK, rsp)
+	}
 }
 
-func (app *BaseApp) Start(ctx context.Context) {
+func (app *BaseApp) Start(ctx context.Context) error {
 	l := log.Tag("BaseApp.Start")
 	var err error
 
 	if !app.initialized {
 		if err = app.Initialize(); err != nil {
-			panic(err)
+			return errors.New("failed to initialize app: " + err.Error())
 		}
 	}
 
 	if app.listener, err = net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%d", app.Config.Port)); err != nil {
-		panic(err)
+		return errors.New("failed to listen: " + err.Error())
 	}
 
-	wg := sync.WaitGroup{}
+	errCh := make(chan error, 1)
 
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
 		l.Printf("start listening on %s", app.listener.Addr().String())
 		if err := app.HttpServer.Serve(app.listener); err != nil && err != http.ErrServerClosed {
-			l.Error(err)
+			errCh <- err
+			return
 		}
+
+		// no error, close channel
+		close(errCh)
 	}()
 
-	wg.Add(1)
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
 	go func() {
@@ -120,7 +135,6 @@ func (app *BaseApp) Start(ctx context.Context) {
 			shutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			_ = app.HttpServer.Shutdown(shutCtx)
 			cancel()
-			wg.Done()
 		}()
 
 		select {
@@ -132,7 +146,7 @@ func (app *BaseApp) Start(ctx context.Context) {
 			l.Printf("got signal: %v", gotSignal)
 			return
 		case <-ctx.Done():
-			l.Printf("context is done")
+			l.Printf("context has done")
 			return
 		}
 	}()
@@ -142,9 +156,19 @@ func (app *BaseApp) Start(ctx context.Context) {
 		_ = http.ListenAndServe("0.0.0.0:"+strconv.Itoa(app.Config.DebugPort), nil)
 	}()
 
-	wg.Wait()
+	return <-errCh
 }
 
 func (app *BaseApp) Listener() net.Listener {
 	return app.listener
+}
+
+func (app *BaseApp) GetDB() *gorm.DB {
+	if !app.initialized {
+		err := app.Initialize()
+		if err != nil {
+			panic(err)
+		}
+	}
+	return db.GetDB()
 }

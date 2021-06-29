@@ -16,8 +16,8 @@ var (
 	dbDefault *gorm.DB
 )
 
-// Config presents configuration that's necessary to work with database
-type Config struct {
+// DBConfig presents configuration that's necessary to work with database
+type DBConfig struct {
 	Driver          string `env:"DB_DRIVER" envDefault:"postgres"`
 	DSN             string `env:"DB_DSN"`
 	MaxOpenConns    int    `env:"DB_MAX_OPEN_CONNS" envDefault:"25"`
@@ -32,7 +32,7 @@ type Config struct {
 }
 
 // GetDSN returns a dsn that is read from ENV or built from separated env DB_*
-func (c Config) GetDSN() string {
+func (c DBConfig) GetDSN() string {
 	if c.DSN != "" {
 		return c.DSN
 	}
@@ -51,7 +51,7 @@ func (c Config) GetDSN() string {
 
 // Open open a DB connection
 //  dbDefault, err := Open(config)
-func Open(config *Config) (*gorm.DB, error) {
+func Open(config *DBConfig) (*gorm.DB, error) {
 
 	var dialector gorm.Dialector
 	switch config.Driver {
@@ -98,7 +98,7 @@ func Close(db *gorm.DB) {
 // inMemorySqliteCfg presents configuration for quick testing
 // this is lightweight database, should consider to user a real DB
 // in more advanced testing like concurrency writing
-var inMemorySqliteCfg = &Config{
+var inMemorySqliteCfg = &DBConfig{
 	Driver:          "sqlite3",
 	DSN:             ":memory:",
 	MaxOpenConns:    1, // should be 1 cuz sqlite doesn't support concurrency writing operation.
@@ -106,10 +106,10 @@ var inMemorySqliteCfg = &Config{
 	ConnMaxLifetime: 600,
 }
 
-// SetupTest setups an in-memory DB for testing and set to default
+// MustSetupTest setups an in-memory DB for testing and set to default
 // it'll panic if errors occur
 func MustSetupTest() {
-	cfg := new(Config)
+	cfg := new(DBConfig)
 	*cfg = *inMemorySqliteCfg
 
 	db, err := Open(cfg)
@@ -129,7 +129,7 @@ func GetDB() *gorm.DB {
 }
 
 // OpenDefault opens default database connection and assign to default
-func OpenDefault(config *Config) error {
+func OpenDefault(config *DBConfig) error {
 	db, err := Open(config)
 	if err != nil {
 		return err
@@ -140,7 +140,7 @@ func OpenDefault(config *Config) error {
 }
 
 // MustOpenDefault open connection & assign to dbDefault, this will panic application if failed
-func MustOpenDefault(config *Config) {
+func MustOpenDefault(config *DBConfig) {
 	if err := OpenDefault(config); err != nil {
 		panic(err)
 	}

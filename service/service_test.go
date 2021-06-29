@@ -31,7 +31,7 @@ func TestStartService(t *testing.T) {
 
 	<-time.After(time.Millisecond * 100)
 
-	req, err := http.NewRequest(http.MethodGet, "http://"+app.Listener().Addr().String(), nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+app.Listener().Addr().String() + "/status", nil)
 	require.NoError(t, err)
 	rsp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)

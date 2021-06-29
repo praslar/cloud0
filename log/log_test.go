@@ -18,7 +18,7 @@ func TestTagWithCtx(t *testing.T) {
 	_ = os.Setenv("LOG_FORMAT", "json")
 	_ = os.Setenv("LOG_LEVEL", "debug")
 	Init()
-	entry := TagWithCtx("test", mockGetStringer(func(_ string) string {
+	entry := TagWithGetString("test", mockGetStringer(func(_ string) string {
 		return "test-request-id"
 	}))
 

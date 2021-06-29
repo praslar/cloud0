@@ -112,7 +112,7 @@ func TestInsertOnSameDB(t *testing.T) {
 }
 
 func TestConfigShouldBuildDSN(t *testing.T) {
-	c := Config{
+	c := DBConfig{
 		DSN:  "",
 		Host: "localhost",
 		Port: "5432",
