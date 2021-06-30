@@ -11,5 +11,11 @@ type AppConfig struct {
 	ReadTimeout   int  `env:"READ_TIMEOUT" envDefault:"15"`
 	EnableProfile bool `env:"ENABLE_PROFILE" envDefault:"true"` // enable profile listener
 	EnableDB      bool `env:"ENABLE_DB" envDefault:"false"`
-	db.DBConfig
+	DB            *db.Config
+}
+
+func NewAppConfig() *AppConfig {
+	return &AppConfig{
+		DB: &db.Config{},
+	}
 }

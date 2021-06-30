@@ -29,7 +29,7 @@ func (e *apierr) Code() int {
 }
 
 func (e *apierr) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{"error": e.message})
+	return json.Marshal(map[string]string{"detail": e.message})
 }
 
 func (e *apierr) Error() string {
