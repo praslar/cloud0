@@ -23,24 +23,25 @@ import (
 )
 
 type BaseApp struct {
-	Config     AppConfig
+	Config     *AppConfig
 	Name       string
 	Version    string
 	Router     *gin.Engine
 	HttpServer *http.Server
 
-	listener               net.Listener
-	initialized            bool
-	healthEndpointDisabled bool
+	listener       net.Listener
+	initialized    bool
+	healthDisabled bool
 }
 
 func NewApp(name, version string) *BaseApp {
 	app := &BaseApp{
-		Name:                   name,
-		Version:                version,
-		Router:                 gin.New(),
-		HttpServer:             &http.Server{},
-		healthEndpointDisabled: false,
+		Name:           name,
+		Version:        version,
+		Router:         gin.New(),
+		HttpServer:     &http.Server{},
+		Config:         NewAppConfig(),
+		healthDisabled: false,
 	}
 
 	app.HttpServer.Handler = app.Router
@@ -49,30 +50,30 @@ func NewApp(name, version string) *BaseApp {
 }
 
 func (app *BaseApp) DisableHealthEndpoint() {
-	app.healthEndpointDisabled = true
+	app.healthDisabled = true
 }
 
 func (app *BaseApp) Initialize() error {
-	if err := env.Parse(&app.Config); err != nil {
+	if err := env.Parse(app); err != nil {
 		return err
 	}
 
 	app.HttpServer.ReadTimeout = time.Duration(app.Config.ReadTimeout) * time.Second
 
-	// register error handler
+	// register default middlewares
 	app.Router.Use(
-		ginext.ErrorHandler,
 		ginext.RequestIDMiddleware,
 		ginext.RequestLogMiddleware(app.Name),
+		ginext.ErrorHandler,
 	)
 
 	// register routes
-	if !app.healthEndpointDisabled {
+	if !app.healthDisabled {
 		app.Router.GET("/status", app.HealthHandler())
 	}
 
 	if app.Config.EnableDB {
-		err := db.OpenDefault(&app.Config.DBConfig)
+		err := db.OpenDefault(app.Config.DB)
 		if err != nil {
 			return errors.New("failed to open default DB: " + err.Error())
 		}
