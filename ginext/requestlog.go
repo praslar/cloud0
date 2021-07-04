@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	. "gitlab.com/goxp/cloud0/common"
-	"gitlab.com/goxp/cloud0/log"
+	"gitlab.com/goxp/cloud0/logger"
 )
 
 func RequestLogMiddleware(tag string) gin.HandlerFunc {
@@ -25,7 +25,7 @@ func logRequest(c *gin.Context, tag string) {
 	defer func() {
 		go func() {
 			latency := time.Since(start).Milliseconds()
-			l := log.Tag(tag).
+			l := logger.Tag(tag).
 				WithField("status", c.Writer.Status()).
 				WithField("method", c.Request.Method).
 				WithField("path", path).

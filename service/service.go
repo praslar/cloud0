@@ -18,7 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gitlab.com/goxp/cloud0/db"
 	"gitlab.com/goxp/cloud0/ginext"
-	"gitlab.com/goxp/cloud0/log"
+	"gitlab.com/goxp/cloud0/logger"
 	"gorm.io/gorm"
 )
 
@@ -102,7 +102,7 @@ func (app *BaseApp) HealthHandler() gin.HandlerFunc {
 }
 
 func (app *BaseApp) Start(ctx context.Context) error {
-	l := log.Tag("BaseApp.Start")
+	l := logger.Tag("BaseApp.Start")
 	var err error
 
 	if !app.initialized {
