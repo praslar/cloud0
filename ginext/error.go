@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/goxp/cloud0/log"
+	"gitlab.com/goxp/cloud0/logger"
 )
 
 var (
@@ -41,9 +41,11 @@ func NewError(code int, message string) error {
 }
 
 func ErrorHandler(c *gin.Context) {
-	l := log.Tag("ginext.ErrorHandler")
+	l := logger.Tag("ginext.ErrorHandler")
 	defer func() {
 		if err := recover(); err != nil {
+			l.WithField("err", err).Warn("handle error from panic")
+
 			switch v := err.(type) {
 			case error:
 				// unable to read the request body
@@ -54,7 +56,6 @@ func ErrorHandler(c *gin.Context) {
 				_ = c.Error(v)
 
 			case string:
-				l.Debugf("erorr: %s", v)
 				_ = c.Error(NewError(http.StatusInternalServerError, v))
 			default:
 				_ = c.Error(NewError(http.StatusInternalServerError, fmt.Sprintf("unknown error: %v", v)))

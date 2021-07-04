@@ -20,8 +20,12 @@ func (p *Pagination) MarshalJSON() ([]byte, error) {
 	return json.Marshal((*Alias)(p))
 }
 
+// ResponseMeta is a general response metadata
 type ResponseMeta struct {
-	*Pagination
+	Page       int   `json:"page"`
+	PageSize   int   `json:"page_size"`
+	TotalRows  int64 `json:"total_rows"`
+	TotalPages int   `json:"total_pages"`
 }
 
 type GeneralResponse struct {
@@ -34,14 +38,6 @@ func NewResponse(data interface{}) *GeneralResponse {
 	return &GeneralResponse{Data: data}
 }
 
-func NewPaginatedMeta(page, pages, pageSize int) *ResponseMeta {
-	return &ResponseMeta{&Pagination{
-		Page:     page,
-		Pages:    pages,
-		PageSize: pageSize,
-	}}
-}
-
 func NewResponseWithMeta(data interface{}, meta *ResponseMeta) *GeneralResponse {
 	return &GeneralResponse{
 		Data: data,
@@ -49,10 +45,15 @@ func NewResponseWithMeta(data interface{}, meta *ResponseMeta) *GeneralResponse 
 	}
 }
 
-func NewPaginatedResponse(data interface{}, page *Pagination) *GeneralResponse {
+func NewPaginatedResponse(data interface{}, pager *Pager) *GeneralResponse {
 	return &GeneralResponse{
 		Data: data,
-		Meta: &ResponseMeta{Pagination: page},
+		Meta: &ResponseMeta{
+			Page:       pager.GetPage(),
+			TotalPages: pager.GetTotalPages(),
+			PageSize:   pager.GetPageSize(),
+			TotalRows:  pager.TotalRows,
+		},
 	}
 }
 
