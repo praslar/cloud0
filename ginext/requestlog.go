@@ -36,8 +36,11 @@ func logRequest(c *gin.Context, tag string) {
 				WithField("proto", c.Request.Proto).
 				WithField("x-user-id", c.GetInt64(HeaderUserID))
 
-			if v := c.GetHeader("X-Forward-For"); v != "" {
-				l = l.WithField("x-forward-for", v)
+			if v := c.GetHeader("X-Forwarded-For"); v != "" {
+				l = l.WithField("x-forwarded-for", v)
+			}
+			if v := c.GetHeader("x-real-ip"); v != "" {
+				l = l.WithField("x-real-ip", v)
 			}
 			if v := c.GetString("upstream"); v != "" {
 				l = l.WithField("upstream", v)
