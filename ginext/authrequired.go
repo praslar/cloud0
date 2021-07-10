@@ -11,7 +11,7 @@ import (
 // (it usually set by API Gateway)
 func AuthRequiredMiddleware(c *gin.Context) {
 	headers := struct {
-		UserID   int64  `header:"x-user-id" validate:"required,min=1"`
+		UserID   string  `header:"x-user-id" validate:"required,min=1"`
 		UserMeta string `header:"x-user-meta"`
 	}{}
 	if c.ShouldBindHeader(&headers) != nil {
@@ -26,11 +26,11 @@ func AuthRequiredMiddleware(c *gin.Context) {
 	c.Next()
 }
 
-type Int64Getter interface {
-	GetInt64(key string) int64
+type GetStringer interface {
+	GetString(key string) string
 }
 
 // GetUserID returns the user ID embedded in Gin context
-func GetUserID(c Int64Getter) int64 {
-	return c.GetInt64(HeaderUserID)
+func GetUserID(c GetStringer) string {
+	return c.GetString(HeaderUserID)
 }
