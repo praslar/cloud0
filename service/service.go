@@ -72,6 +72,8 @@ func (app *BaseApp) Initialize() error {
 		app.Router.GET("/status", app.HealthHandler())
 	}
 
+	app.Router.NoRoute(ginext.NotFoundHandler)
+
 	if app.Config.EnableDB {
 		err := db.OpenDefault(app.Config.DB)
 		if err != nil {
