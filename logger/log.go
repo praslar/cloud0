@@ -47,7 +47,7 @@ func TagWithGetString(tag string, ctx GetStringer) *logrus.Entry {
 
 func WithCtx(ctx context.Context, tag string) *logrus.Entry {
 	l := Tag(tag)
-	if requestID := ctx.Value("x-request-id").(string); requestID != "" {
+	if requestID, ok := ctx.Value("x-request-id").(string); ok && requestID != "" {
 		l = l.WithField("x-request-id", requestID)
 	}
 	return l
