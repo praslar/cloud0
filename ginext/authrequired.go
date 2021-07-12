@@ -18,6 +18,7 @@ func AuthRequiredMiddleware(c *gin.Context) {
 	}{}
 	if c.ShouldBindHeader(&headers) != nil {
 		_ = c.Error(NewError(http.StatusUnauthorized, "unauthorized"))
+		c.Status(http.StatusUnauthorized) // in case of we don't use this middleware with ErrorHandler
 		c.Abort()
 		return
 	}

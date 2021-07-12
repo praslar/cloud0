@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+	"gitlab.com/goxp/cloud0/logger"
 	"gorm.io/gorm"
 )
 
@@ -41,10 +41,11 @@ type SortableFieldsGetter interface {
 }
 
 // NewPagerWithGinCtx initializes a new Pager from gin context by reading in order query, body request
-func NewPagerWithGinCtx(c *gin.Context, logger *logrus.Entry) *Pager {
+func NewPagerWithGinCtx(c *gin.Context) *Pager {
+	log := logger.WithCtx(c, "pager")
 	pg := &Pager{}
-	if err := c.ShouldBind(pg); err != nil && logger != nil {
-		logger.WithError(err).Error("failed to parse pager request")
+	if err := c.ShouldBind(pg); err != nil {
+		log.WithError(err).Error("failed to parse pager request")
 	}
 	return pg
 }

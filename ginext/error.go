@@ -41,7 +41,8 @@ func NewError(code int, message string) error {
 }
 
 func ErrorHandler(c *gin.Context) {
-	l := logger.Tag("ginext.ErrorHandler")
+	l := logger.WithCtx(c, "ErrorHandler")
+
 	defer func() {
 		if err := recover(); err != nil {
 			l.WithField("err", err).Warn("handle error from panic")
@@ -69,11 +70,12 @@ func ErrorHandler(c *gin.Context) {
 
 		l.WithField("errors.len", len(c.Errors)).Debug("handle stacked errors")
 
-		// we might need to log/write errors later, just respond last error now
+		for _, err := range c.Errors {
+			l.WithError(err.Err).Error("error from stack")
+		}
+
+		// just respond last error now
 		err := c.Errors.Last().Err
-
-		l.WithError(err).Debug("handle error")
-
 		code := http.StatusInternalServerError
 		if v, ok := err.(ApiError); ok {
 			code = v.Code()
