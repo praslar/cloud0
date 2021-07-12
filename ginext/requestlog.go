@@ -8,13 +8,7 @@ import (
 	"gitlab.com/goxp/cloud0/logger"
 )
 
-func RequestLogMiddleware(tag string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		logRequest(ctx, tag)
-	}
-}
-
-func logRequest(c *gin.Context, tag string) {
+func AccessLogMiddleware(c *gin.Context) {
 	start := time.Now()
 	path := c.Request.URL.Path
 	raw := c.Request.URL.RawQuery
@@ -25,7 +19,7 @@ func logRequest(c *gin.Context, tag string) {
 	defer func() {
 		go func() {
 			latency := time.Since(start).Milliseconds()
-			l := logger.Tag(tag).
+			l := logger.
 				WithField("status", c.Writer.Status()).
 				WithField("method", c.Request.Method).
 				WithField("path", path).

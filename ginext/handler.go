@@ -70,10 +70,7 @@ func WrapHandler(handler Handler) gin.HandlerFunc {
 				return
 			}
 
-			// if any panic
-			panicErr := recover()
-			if panicErr != nil {
-				_ = c.Error(err)
+			if resp == nil {
 				return
 			}
 

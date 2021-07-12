@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.com/goxp/cloud0/logger"
@@ -45,7 +46,7 @@ func ErrorHandler(c *gin.Context) {
 
 	defer func() {
 		if err := recover(); err != nil {
-			l.WithField("err", err).Warn("handle error from panic")
+			l.WithField("debug.Stack", string(debug.Stack())).Warn("handle panic")
 
 			switch v := err.(type) {
 			case error:
@@ -71,7 +72,7 @@ func ErrorHandler(c *gin.Context) {
 		l.WithField("errors.len", len(c.Errors)).Debug("handle stacked errors")
 
 		for _, err := range c.Errors {
-			l.WithError(err.Err).Error("error from stack")
+			l.WithError(err.Err).Debug("process error")
 		}
 
 		// just respond last error now
