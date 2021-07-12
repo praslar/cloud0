@@ -34,10 +34,6 @@ type GeneralResponse struct {
 	Error interface{}   `json:"error,omitempty"`
 }
 
-func NewResponse(data interface{}) *GeneralResponse {
-	return &GeneralResponse{Data: data}
-}
-
 func NewResponseWithMeta(data interface{}, meta *ResponseMeta) *GeneralResponse {
 	return &GeneralResponse{
 		Data: data,
