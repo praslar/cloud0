@@ -63,7 +63,7 @@ func (app *BaseApp) Initialize() error {
 	// register default middlewares
 	app.Router.Use(
 		ginext.RequestIDMiddleware,
-		ginext.RequestLogMiddleware(app.Name),
+		ginext.AccessLogMiddleware,
 		ginext.ErrorHandler,
 	)
 
