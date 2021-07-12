@@ -16,27 +16,27 @@ type Request struct {
 type Response struct {
 	Code   int
 	Header http.Header
-	*GeneralResponse
+	*GeneralBody
 }
 
 func NewResponse(code int) *Response {
 	return &Response{
-		Code:            code,
-		GeneralResponse: &GeneralResponse{},
+		Code:        code,
+		GeneralBody: &GeneralBody{},
 	}
 }
 
 func NewResponseData(code int, data interface{}) *Response {
 	return &Response{
-		Code:            code,
-		GeneralResponse: NewPaginatedResponse(data, nil),
+		Code:        code,
+		GeneralBody: NewBody(data, nil),
 	}
 }
 
 func NewResponseWithPager(code int, data interface{}, pager *Pager) *Response {
 	return &Response{
-		Code:            code,
-		GeneralResponse: NewPaginatedResponse(data, pager),
+		Code:        code,
+		GeneralBody: NewBodyPaginated(data, pager),
 	}
 }
 
@@ -84,7 +84,7 @@ func WrapHandler(handler Handler) gin.HandlerFunc {
 			}
 
 			if resp.Data != nil || resp.Error != nil {
-				c.JSON(resp.Code, resp.GeneralResponse)
+				c.JSON(resp.Code, resp.GeneralBody)
 			} else {
 				c.Status(resp.Code)
 			}

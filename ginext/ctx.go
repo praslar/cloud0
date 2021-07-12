@@ -12,6 +12,8 @@ func FromGinRequestContext(c *gin.Context) context.Context {
 	ctx := c.Request.Context()
 	if requestID := c.GetString("x-request-id"); requestID != "" {
 		ctx = context.WithValue(ctx, "x-request-id", requestID)
+	} else if requestID = c.GetHeader("x-request-id"); requestID != "" {
+		ctx = context.WithValue(ctx, "x-request-id", requestID)
 	}
 	return ctx
 }
