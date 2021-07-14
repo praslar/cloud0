@@ -93,19 +93,13 @@ func WrapHandler(handler Handler) gin.HandlerFunc {
 }
 
 // MustBind does a binding on v with income request data
-// it'll panic if any invalid data (and must be recovered by WrapHandler in this scope)
+// it'll panic if any invalid data (and by design, it should be recovered by error handler middleware)
 func (r *Request) MustBind(v interface{}) {
-	err := r.GinCtx.ShouldBind(v)
-	if err != nil {
-		panic(err)
-	}
+	r.MustNoError(r.GinCtx.ShouldBind(v))
 }
 
 func (r *Request) MustBindUri(v interface{}) {
-	err := r.GinCtx.ShouldBindUri(v)
-	if err != nil {
-		panic(err)
-	}
+	r.MustNoError(r.GinCtx.ShouldBindUri(v))
 }
 
 // MustNoError makes a ASSERT on err variable, panic when it's not nil
