@@ -3,9 +3,7 @@ package ginext
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"gitlab.com/goxp/cloud0/logger"
@@ -44,47 +42,41 @@ func NewError(code int, message string) error {
 func ErrorHandler(c *gin.Context) {
 	l := logger.WithCtx(c, "ErrorHandler")
 
+	var err error
+
 	defer func() {
-		if err := recover(); err != nil {
-			l.WithField("debug.Stack", string(debug.Stack())).Warn("handle panic")
-
-			switch v := err.(type) {
+		if r := recover(); r != nil {
+			switch v := r.(type) {
 			case error:
-				// unable to read the request body
-				if v == io.EOF {
-					_ = c.Error(NewError(http.StatusBadRequest, "invalid payload"))
-					break
-				}
-				_ = c.Error(v)
-
-			case string:
-				_ = c.Error(NewError(http.StatusInternalServerError, v))
+				err = v
 			default:
-				_ = c.Error(NewError(http.StatusInternalServerError, fmt.Sprintf("unknown error: %v", v)))
+				err = NewError(http.StatusInternalServerError, fmt.Sprintf("unexpected error: %v", v))
 			}
 		}
 
 		// no error
-		if len(c.Errors) == 0 {
+		if err == nil && len(c.Errors) == 0 {
 			return
 		}
 
-		l.WithField("errors.len", len(c.Errors)).Debug("handle stacked errors")
-
-		for _, err := range c.Errors {
-			l.WithError(err.Err).Debug("process error")
+		if len(c.Errors) > 0 {
+			l = l.WithField("errors", c.Errors)
+			if err != nil {
+				l = l.WithField("recoveredError", err)
+			} else {
+				err = c.Errors.Last().Err
+			}
 		}
 
-		// just respond last error now
-		err := c.Errors.Last().Err
+		l.Debug("handle request error")
+
 		code := http.StatusInternalServerError
 		if v, ok := err.(ApiError); ok {
 			code = v.Code()
 		}
 
-		c.JSON(code, gin.H{"error": err})
+		c.JSON(code, &GeneralBody{Error: err})
 	}()
 
 	c.Next()
-
 }
