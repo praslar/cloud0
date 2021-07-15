@@ -60,7 +60,8 @@ func (app *BaseApp) Initialize() error {
 
 	app.HttpServer.ReadTimeout = time.Duration(app.Config.ReadTimeout) * time.Second
 
-	_ = app.Router.SetTrustedProxies(app.Config.TrustedProxy)
+	// wait to gin 1.8 to support this
+	//_ = app.Router.SetTrustedProxies(app.Config.TrustedProxy)
 	app.Router.ForwardedByClientIP = true
 
 	// register default middlewares
