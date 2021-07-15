@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/caarlos0/env/v6 v6.6.2
-	github.com/gin-gonic/gin v1.7.2
+	github.com/gin-gonic/gin v1.7.2-0.20210525054735-b5ca9898757b
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/google/uuid v1.2.0
 	github.com/sirupsen/logrus v1.8.1

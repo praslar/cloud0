@@ -13,9 +13,9 @@ func TestPagerGetOrder(t *testing.T) {
 		output     string
 	}{
 		{
-			name:       "SortIDByDefault",
+			name:       "EmptyByDefault",
 			inputOrder: "",
-			output:     "id asc",
+			output:     "",
 		},
 		{
 			name:       "ConvertMinusToDesc",
@@ -35,7 +35,7 @@ func TestPagerGetOrder(t *testing.T) {
 				SortableFields: []string{"id", "name"}, // allow sort 2 these fields by default
 				Sort: tc.inputOrder,
 			}
-			got := p.GetOrder()
+			got := p.GetOrder(p.SortableFields)
 			assert.Equal(t, tc.output, got)
 		})
 	}
