@@ -60,6 +60,9 @@ func (app *BaseApp) Initialize() error {
 
 	app.HttpServer.ReadTimeout = time.Duration(app.Config.ReadTimeout) * time.Second
 
+	_ = app.Router.SetTrustedProxies(app.Config.TrustedProxy)
+	app.Router.ForwardedByClientIP = true
+
 	// register default middlewares
 	app.Router.Use(
 		ginext.RequestIDMiddleware,

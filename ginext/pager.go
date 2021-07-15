@@ -2,6 +2,7 @@ package ginext
 
 import (
 	"math"
+	"reflect"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -76,18 +77,14 @@ type zerost struct{}
 
 // GetOrder parses the order field then return Gorm order format
 // 	eg. "name,-age" => "name asc, age desc"
-func (p *Pager) GetOrder() string {
-	if p.Sort == "" {
-		return "id asc"
-	}
-
+func (p *Pager) GetOrder(sortableFields []string) string {
 	rawSegments := strings.Split(p.Sort, ",")
 	var finalSortFields []string
 
 	// sortable fields index
-	var sortableFields = map[string]zerost{}
-	for _, field := range p.SortableFields {
-		sortableFields[field] = zerost{}
+	var sortableFieldsIdx = map[string]zerost{}
+	for _, field := range sortableFields {
+		sortableFieldsIdx[field] = zerost{}
 	}
 
 	for _, segment := range rawSegments {
@@ -108,7 +105,7 @@ func (p *Pager) GetOrder() string {
 			fieldName = segment
 		}
 
-		if _, ok := sortableFields[fieldName]; ok {
+		if _, ok := sortableFieldsIdx[fieldName]; ok {
 			finalSortFields = append(finalSortFields, fieldName+" "+direction)
 		}
 	}
@@ -131,12 +128,29 @@ func (p *Pager) DoQuery(value interface{}, db *gorm.DB) *gorm.DB {
 	}
 	p.TotalRows = totalRows
 
-	// get sortable fields if this model supports (just call in case empty page.SortableFields
+	sortableFields := p.SortableFields
 	if len(p.SortableFields) == 0 {
-		if getter, ok := value.(SortableFieldsGetter); ok {
-			p.SortableFields = getter.GetSortableFields()
-		}
+		sortableFields = p.resolveSortableFields(value)
+	}
+	order := p.GetOrder(sortableFields)
+
+	tx = db.Offset(p.GetOffset()).Limit(p.GetPageSize())
+	if order != "" {
+		tx = tx.Order(order)
 	}
 
-	return db.Offset(p.GetOffset()).Limit(p.GetPageSize()).Order(p.GetOrder()).Find(value)
+	return tx.Find(value)
+}
+
+func (p *Pager) resolveSortableFields(value interface{}) []string {
+	var fields []string
+	refType := reflect.TypeOf(value)
+	for refType.Kind() == reflect.Ptr || refType.Kind() == reflect.Slice {
+		refType = refType.Elem()
+	}
+	ptr := reflect.New(refType)
+	if getter, ok := ptr.Interface().(SortableFieldsGetter); ok {
+		fields = getter.GetSortableFields()
+	}
+	return fields
 }
