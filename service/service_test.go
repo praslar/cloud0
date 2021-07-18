@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"gitlab.com/goxp/cloud0/common"
+	"gitlab.com/goxp/cloud0/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,7 @@ func TestStartService(t *testing.T) {
 	// setup
 	_ = os.Setenv("PORT", "0")
 	gin.SetMode(gin.TestMode)
+	logger.Init("test")
 
 	app := NewApp("echo", "v1")
 
