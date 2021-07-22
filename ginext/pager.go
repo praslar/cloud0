@@ -21,7 +21,7 @@ type Pager struct {
 	Page           int    `json:"page" form:"page"`
 	PageSize       int    `json:"page_size" form:"page_size"`
 	Sort           string `json:"sort" form:"sort"`
-	TotalRows      int64  `json:"total_rows"`
+	TotalRows      int64  `json:"total"`
 	SortableFields []string
 }
 

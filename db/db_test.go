@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestOpenDB(t *testing.T) {
@@ -82,7 +83,8 @@ func TestInsertOnSameDB(t *testing.T) {
 
 	// init data
 	MustSetupTest()
-	_ = GetDB().AutoMigrate(&sampleModel{})
+	err := GetDB().AutoMigrate(&sampleModel{})
+	require.NoError(t, err)
 
 	for i := 0; i < threads; i++ {
 

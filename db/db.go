@@ -32,7 +32,6 @@ type Config struct {
 	Pass   string `env:"DB_PASS"`
 	Name   string `env:"DB_NAME"`
 	Schema string `env:"DB_SCHEMA" envDefault:"public"`
-	Tz     string `env:"DB_TZ" envDefault:"UTC"`
 }
 
 // GetDSN returns a dsn that is read from ENV or built from separated env DB_*
@@ -42,13 +41,12 @@ func (c Config) GetDSN() string {
 	}
 
 	c.DSN = fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable connect_timeout=5 TimeZone=%s",
+		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable connect_timeout=5",
 		c.Host,
 		c.Port,
 		c.User,
 		c.Name,
 		c.Pass,
-		c.Tz,
 	)
 
 	return c.DSN
@@ -57,6 +55,13 @@ func (c Config) GetDSN() string {
 // Open open a DB connection
 //  dbDefault, err := Open(config)
 func Open(config *Config) (*gorm.DB, error) {
+	naming := &schema.NamingStrategy{
+		SingularTable: true,
+	}
+	cfg := &gorm.Config{
+		NamingStrategy: naming,
+		Logger:         logger.Default.LogMode(logger.Silent),
+	}
 
 	var dialector gorm.Dialector
 	switch config.Driver {
@@ -64,17 +69,12 @@ func Open(config *Config) (*gorm.DB, error) {
 		dialector = sqlite.Open(config.GetDSN())
 	case "postgres":
 		dialector = postgres.Open(config.GetDSN())
+		naming.TablePrefix = config.Schema + "."
 	default:
 		return nil, fmt.Errorf("unsupported driver %s", config.Driver)
 	}
 
-	db, err := gorm.Open(dialector, &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-			TablePrefix:   config.Schema + ".",
-		},
-		Logger: logger.Default.LogMode(logger.Silent),
-	})
+	db, err := gorm.Open(dialector, cfg)
 	if err != nil {
 		return nil, err
 	}
