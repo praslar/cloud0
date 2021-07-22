@@ -26,11 +26,13 @@ type Config struct {
 	MaxIdleConns    int    `env:"DB_MAX_IDLE_CONNS" envDefault:"25"`
 	ConnMaxLifetime int    `env:"DB_CONN_MAX_LIFETIME" envDefault:"600"`
 
-	Host string `env:"DB_HOST"`
-	Port string `env:"DB_PORT" envDefault:"5432"`
-	User string `env:"DB_USER"`
-	Pass string `env:"DB_PASS"`
-	Name string `env:"DB_NAME"`
+	Host   string `env:"DB_HOST"`
+	Port   string `env:"DB_PORT" envDefault:"5432"`
+	User   string `env:"DB_USER"`
+	Pass   string `env:"DB_PASS"`
+	Name   string `env:"DB_NAME"`
+	Schema string `env:"DB_SCHEMA" envDefault:"public"`
+	Tz     string `env:"DB_TZ" envDefault:"UTC"`
 }
 
 // GetDSN returns a dsn that is read from ENV or built from separated env DB_*
@@ -40,12 +42,13 @@ func (c Config) GetDSN() string {
 	}
 
 	c.DSN = fmt.Sprintf(
-		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable connect_timeout=5",
+		"host=%s port=%s user=%s dbname=%s password=%s sslmode=disable connect_timeout=5 TimeZone=%s",
 		c.Host,
 		c.Port,
 		c.User,
 		c.Name,
 		c.Pass,
+		c.Tz,
 	)
 
 	return c.DSN
@@ -68,6 +71,7 @@ func Open(config *Config) (*gorm.DB, error) {
 	db, err := gorm.Open(dialector, &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
+			TablePrefix:   config.Schema + ".",
 		},
 		Logger: logger.Default.LogMode(logger.Silent),
 	})

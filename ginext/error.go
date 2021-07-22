@@ -73,6 +73,16 @@ func ErrorHandler(c *gin.Context) {
 		code := http.StatusInternalServerError
 		if v, ok := err.(ApiError); ok {
 			code = v.Code()
+		} else if v, ok := err.(*json.UnmarshalTypeError); ok {
+			code = http.StatusBadRequest
+			err = &validationErrors{
+				fieldErrors: []ValidatorFieldError{
+					&validatorFieldError{
+						field:   v.Field,
+						message: fmt.Sprintf("invalid type `%s`, requires `%s`", v.Value, v.Type.String()),
+					},
+				},
+			}
 		}
 
 		c.JSON(code, &GeneralBody{Error: err})
