@@ -13,8 +13,7 @@ import (
 func TestOpenDB(t *testing.T) {
 	t.Run("open successfully", func(t *testing.T) {
 		assert.NotPanics(t, func() {
-			cfg := *inMemorySqliteCfg
-			MustOpenDefault(&cfg)
+			MustOpenDefault(inMemorySqliteCfg)
 			CloseDB()
 		})
 	})
@@ -50,8 +49,7 @@ func TestSetupTestDB(t *testing.T) {
 func TestGetDB(t *testing.T) {
 
 	assert.NotPanics(t, func() {
-		cfg := *inMemorySqliteCfg
-		MustOpenDefault(&cfg)
+		MustOpenDefault(inMemorySqliteCfg)
 
 		assert.Equal(t, dbDefault, GetDB())
 		CloseDB()
@@ -63,8 +61,7 @@ func TestGetDB(t *testing.T) {
 }
 
 func TestCloseDB(t *testing.T) {
-	cfg := *inMemorySqliteCfg
-	MustOpenDefault(&cfg)
+	MustOpenDefault(inMemorySqliteCfg)
 	assert.NotNil(t, dbDefault)
 
 	CloseDB()

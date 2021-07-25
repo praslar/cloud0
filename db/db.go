@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -94,6 +95,12 @@ func Open(config *Config) (*gorm.DB, error) {
 		theDB.SetConnMaxLifetime(time.Duration(config.ConnMaxLifetime) * time.Second)
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second * 2)
+	defer cancel()
+	if err = theDB.PingContext(ctx); err != nil {
+		return nil, fmt.Errorf("error while ping DB: %v", err)
+	}
+
 	return db, nil
 }
 
@@ -120,10 +127,7 @@ var inMemorySqliteCfg = &Config{
 // MustSetupTest setups an in-memory DB for testing and set to default
 // it'll panic if errors occur
 func MustSetupTest() {
-	cfg := new(Config)
-	*cfg = *inMemorySqliteCfg
-
-	db, err := Open(cfg)
+	db, err := Open(inMemorySqliteCfg)
 	if err != nil {
 		panic(err)
 	}

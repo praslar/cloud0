@@ -10,33 +10,34 @@ import (
 )
 
 var (
-	_ ApiError = &apierr{}
+	_ ApiError = &apiErr{}
 )
 
+// ApiError is an interface that supports return Code & Marshal to json
 type ApiError interface {
 	Code() int
 	MarshalJSON() ([]byte, error)
 }
 
-type apierr struct {
+type apiErr struct {
 	code    int
 	message string
 }
 
-func (e *apierr) Code() int {
+func (e *apiErr) Code() int {
 	return e.code
 }
 
-func (e *apierr) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{"detail": e.message})
+func (e *apiErr) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]string{"detail": e.Error()})
 }
 
-func (e *apierr) Error() string {
+func (e *apiErr) Error() string {
 	return e.message
 }
 
 func NewError(code int, message string) error {
-	return &apierr{code: code, message: message}
+	return &apiErr{code: code, message: message}
 }
 
 func ErrorHandler(c *gin.Context) {
@@ -59,13 +60,8 @@ func ErrorHandler(c *gin.Context) {
 			return
 		}
 
-		if len(c.Errors) > 0 {
-			l = l.WithField("errors", c.Errors)
-			if err != nil {
-				l = l.WithField("recoveredError", err)
-			} else {
-				err = c.Errors.Last().Err
-			}
+		if err == nil && len(c.Errors) > 0 {
+			err = c.Errors.Last().Err
 		}
 
 		l.Debug("handle request error")

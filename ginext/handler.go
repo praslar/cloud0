@@ -19,6 +19,7 @@ type Response struct {
 	*GeneralBody
 }
 
+// NewResponse makes a new response with empty body
 func NewResponse(code int) *Response {
 	return &Response{
 		Code:        code,
@@ -26,6 +27,7 @@ func NewResponse(code int) *Response {
 	}
 }
 
+// NewResponseData makes a new response with body data
 func NewResponseData(code int, data interface{}) *Response {
 	return &Response{
 		Code:        code,
@@ -33,6 +35,7 @@ func NewResponseData(code int, data interface{}) *Response {
 	}
 }
 
+// NewResponseWithPager makes a new response with body data & pager
 func NewResponseWithPager(code int, data interface{}, pager *Pager) *Response {
 	return &Response{
 		Code:        code,
@@ -54,6 +57,10 @@ func NewRequest(c *gin.Context) *Request {
 }
 
 func (r *Request) Context() context.Context {
+	if r.ctx == nil {
+		r.ctx = context.Background()
+	}
+
 	return r.ctx
 }
 

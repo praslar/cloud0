@@ -9,7 +9,7 @@ import (
 )
 
 // AuthRequiredMiddleware is required the request has to have x-user-id in header
-// (it usually set by API Gateway)
+// (it's usually set by API Gateway)
 func AuthRequiredMiddleware(c *gin.Context) {
 	headers := struct {
 		UserID   string `header:"x-user-id" validate:"required,min=1"`

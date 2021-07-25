@@ -22,10 +22,10 @@ func TestNewValidator(t *testing.T) {
 
 func TestValidateNoError(t *testing.T) {
 	testData := userValidation{
-		FirstName: "Eric",
+		FirstName: "Tony",
 		LastName:  "Huynh",
 		Age:       1,
-		Email:     "eric.huynh@gmail.com",
+		Email:     "Tony.huynh@gmail.com",
 	}
 	err := NewValidator().ValidateStruct(testData)
 	assert.NoError(t, err)
@@ -36,7 +36,7 @@ func TestValidateWithError(t *testing.T) {
 		FirstName: "",
 		LastName:  "Huynh",
 		Age:       1,
-		Email:     "eric.huynh@gmail.com",
+		Email:     "Tony.huynh@gmail.com",
 	}
 	err := NewValidator().ValidateStruct(testData)
 	assert.NotNil(t, err)
@@ -57,10 +57,10 @@ func TestValidateWithError(t *testing.T) {
 
 func TestValidateFailedWithJSONField(t *testing.T) {
 	testData := userValidation{
-		FirstName: "Eric",
+		FirstName: "Tony",
 		LastName:  "",
 		Age:       1,
-		Email:     "eric.huynh@gmail.com",
+		Email:     "Tony.huynh@gmail.com",
 	}
 	err := NewValidator().ValidateStruct(testData)
 	vErrors, _ := err.(ValidatorErrors)
@@ -69,10 +69,10 @@ func TestValidateFailedWithJSONField(t *testing.T) {
 
 func TestValidateFailedWithParamDetailIfSet(t *testing.T) {
 	testData := userValidation{
-		FirstName: "Eric",
+		FirstName: "Tony",
 		LastName:  "Huynh",
 		Age:       200,
-		Email:     "eric.huynh@gmail.com",
+		Email:     "Tony.huynh@gmail.com",
 	}
 	err := NewValidator().ValidateStruct(testData)
 	vErrors, _ := err.(ValidatorErrors)
