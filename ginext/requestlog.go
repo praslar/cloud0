@@ -14,7 +14,7 @@ func AccessLogMiddleware(env string) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
-		if c.Request.URL.Path == "/status-q" {
+		if c.Request.URL.Path == "/status" {
 			c.Next()
 			return
 		}
