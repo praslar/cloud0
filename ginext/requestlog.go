@@ -13,6 +13,12 @@ func AccessLogMiddleware(env string) gin.HandlerFunc {
 	extractHeaders := []string{"x-forwarded-for", common.HeaderTenantID, common.HeaderUserID, common.HeaderXRequestID}
 
 	return func(c *gin.Context) {
+
+		if c.Request.URL.Path == "/status-q" {
+			c.Next()
+			return
+		}
+
 		start := time.Now()
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery

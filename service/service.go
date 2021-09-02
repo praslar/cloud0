@@ -73,7 +73,9 @@ func (app *BaseApp) Initialize() error {
 
 	// register routes
 	if !app.healthDisabled {
-		app.Router.GET("/status", app.HealthHandler())
+		healthHandler := app.HealthHandler()
+		app.Router.GET("/status", healthHandler)
+		app.Router.GET("/status-q", healthHandler)
 	}
 
 	app.Router.NoRoute(ginext.NotFoundHandler)
