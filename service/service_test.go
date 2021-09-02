@@ -29,7 +29,10 @@ func TestStartService(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	go app.Start(ctx)
+	go func() {
+		err := app.Start(ctx)
+		assert.NoError(t, err)
+	}()
 
 	<-time.After(time.Millisecond * 100)
 

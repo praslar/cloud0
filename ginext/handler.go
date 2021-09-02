@@ -120,3 +120,11 @@ func (r *Request) MustNoError(err error) {
 func (r *Request) UintUserID() uint {
 	return UintHeaderValue(r.GinCtx, common.HeaderUserID)
 }
+
+func (r *Request) UintTenantID() uint {
+	return UintHeaderValue(r.GinCtx, common.HeaderTenantID)
+}
+
+func (r *Request) Param(key string) string {
+	return r.GinCtx.Param(key)
+}
