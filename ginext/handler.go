@@ -128,3 +128,7 @@ func (r *Request) UintTenantID() uint {
 func (r *Request) Param(key string) string {
 	return r.GinCtx.Param(key)
 }
+
+func (r *Request) Query(key string) string {
+	return r.GinCtx.Query(key)
+}
