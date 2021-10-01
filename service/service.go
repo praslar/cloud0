@@ -68,7 +68,7 @@ func (app *BaseApp) Initialize() error {
 	app.Router.Use(
 		ginext.RequestIDMiddleware,
 		ginext.AccessLogMiddleware(app.Config.Env),
-		ginext.ErrorHandler,
+		ginext.CreateErrorHandler(app.Config.Debug),
 	)
 
 	// register routes

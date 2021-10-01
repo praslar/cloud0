@@ -57,26 +57,26 @@ func TestGetHeader(t *testing.T) {
 			setHeaderName:  common.HeaderUserID,
 			setHeaderValue: "10",
 			getHeaderName:  common.HeaderUserID,
-			wantValue:      uint(10),
+			wantValue:      uint64(10),
 		},
 		{
 			name:           "GetUintTenantID",
 			setHeaderName:  common.HeaderTenantID,
 			setHeaderValue: "01",
 			getHeaderName:  common.HeaderTenantID,
-			wantValue:      uint(1),
+			wantValue:      uint64(1),
 		},
 		{
 			name:          "Return0WhenMissing",
 			getHeaderName: common.HeaderTenantID,
-			wantValue:     uint(0),
+			wantValue:     uint64(0),
 		},
 		{
 			name:           "Return0WhenInvalid",
 			setHeaderName:  common.HeaderUserID,
 			setHeaderValue: "abc",
 			getHeaderName:  common.HeaderUserID,
-			wantValue:      uint(0),
+			wantValue:      uint64(0),
 		},
 	}
 
@@ -89,7 +89,7 @@ func TestGetHeader(t *testing.T) {
 				c.Request.Header.Set(tc.setHeaderName, tc.setHeaderValue)
 			}
 
-			got := UintHeaderValue(c, tc.getHeaderName)
+			got := Uint64HeaderValue(c, tc.getHeaderName)
 			assert.Equal(t, tc.wantValue, got)
 		})
 	}
@@ -102,7 +102,7 @@ func TestGetShortcutFunc(t *testing.T) {
 	c.Request.Header.Set(common.HeaderTenantID, "01")
 	c.Set(common.HeaderUserID, "10")
 
-	assert.Equal(t, uint(10), UintUserID(c))
+	assert.Equal(t, uint64(10), Uint64UserID(c))
 	assert.Equal(t, "10", GetUserID(c))
-	assert.Equal(t, uint(1), UintTenantID(c))
+	assert.Equal(t, uint64(1), Uint64TenantID(c))
 }

@@ -17,7 +17,7 @@ type testErrorHandlerSuite struct {
 
 func (ts *testErrorHandlerSuite) SetupSuite() {
 	ts.engine = gin.New()
-	ts.engine.Use(ErrorHandler)
+	ts.engine.Use(CreateErrorHandler())
 
 	ts.engine.GET("/no-error", func(c *gin.Context) {
 		c.Status(200)

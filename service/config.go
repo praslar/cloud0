@@ -13,6 +13,7 @@ type AppConfig struct {
 	EnableProfile bool     `env:"ENABLE_PROFILE" envDefault:"true"` // enable profile listener
 	EnableDB      bool     `env:"ENABLE_DB" envDefault:"false"`
 	TrustedProxy  []string `env:"TRUSTED_PROXY" envSeparator:"," envDefault:"127.0.0.1,10.0.0.0/8,192.168.0.0/16"`
+	Debug         bool     `env:"DEBUG" envDefault:"false"`
 	DB            *db.Config
 }
 
