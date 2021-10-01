@@ -117,12 +117,12 @@ func (r *Request) MustNoError(err error) {
 	}
 }
 
-func (r *Request) UintUserID() uint {
-	return UintHeaderValue(r.GinCtx, common.HeaderUserID)
+func (r *Request) Uint64UserID() uint64 {
+	return Uint64HeaderValue(r.GinCtx, common.HeaderUserID)
 }
 
-func (r *Request) UintTenantID() uint {
-	return UintHeaderValue(r.GinCtx, common.HeaderTenantID)
+func (r *Request) Uint64TenantID() uint64 {
+	return Uint64HeaderValue(r.GinCtx, common.HeaderTenantID)
 }
 
 func (r *Request) Param(key string) string {

@@ -14,7 +14,7 @@ func AuthRequiredMiddleware(c *gin.Context) {
 	headers := struct {
 		UserID   string `header:"x-user-id" validate:"required,min=1"`
 		UserMeta string `header:"x-user-meta"`
-		TenantID uint   `header:"x-tenant-id"`
+		TenantID uint64 `header:"x-tenant-id"`
 	}{}
 	if c.ShouldBindHeader(&headers) != nil {
 		_ = c.Error(NewError(http.StatusUnauthorized, "unauthorized"))
@@ -39,23 +39,23 @@ func GetUserID(c GetStringer) string {
 	return c.GetString(HeaderUserID)
 }
 
-func UintHeaderValue(c *gin.Context, headerName string) uint {
+func Uint64HeaderValue(c *gin.Context, headerName string) uint64 {
 	sValue := c.GetHeader(headerName)
 	if sValue == "" {
 		return 0
 	}
-	v, err := strconv.Atoi(sValue)
+	v, err := strconv.ParseUint(sValue, 10, 64)
 	if err != nil {
 		return 0
 	}
 
-	return uint(v)
+	return v
 }
 
-func UintUserID(c *gin.Context) uint {
-	return UintHeaderValue(c, HeaderUserID)
+func Uint64UserID(c *gin.Context) uint64 {
+	return Uint64HeaderValue(c, HeaderUserID)
 }
 
-func UintTenantID(c *gin.Context) uint {
-	return UintHeaderValue(c, HeaderTenantID)
+func Uint64TenantID(c *gin.Context) uint64 {
+	return Uint64HeaderValue(c, HeaderTenantID)
 }
