@@ -109,6 +109,64 @@ func (app *BaseApp) HealthHandler() gin.HandlerFunc {
 	}
 }
 
+func (app *BaseApp) StartTLS(ctx context.Context, certPath string, keyPath string) error {
+	l := logger.Tag("BaseApp.Start")
+	var err error
+
+	if !app.initialized {
+		if err = app.Initialize(); err != nil {
+			return errors.New("failed to initialize app: " + err.Error())
+		}
+	}
+
+	if app.listener, err = net.Listen("tcp4", fmt.Sprintf("0.0.0.0:%d", app.Config.Port)); err != nil {
+		return errors.New("failed to listen: " + err.Error())
+	}
+
+	errCh := make(chan error, 1)
+
+	go func() {
+		l.Printf("start listening on %s", app.listener.Addr().String())
+		if err := app.HttpServer.ServeTLS(app.listener, certPath, keyPath); err != nil && err != http.ErrServerClosed {
+			errCh <- err
+			return
+		}
+
+		// no error, close channel
+		close(errCh)
+	}()
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGHUP)
+	go func() {
+		defer func() {
+			l.Info("shutting down http server ...")
+			shutCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			_ = app.HttpServer.Shutdown(shutCtx)
+			cancel()
+		}()
+		select {
+		case gotSignal, ok := <-signalCh:
+			if !ok {
+				// channel close
+				return
+			}
+			l.Printf("got signal: %v", gotSignal)
+			return
+		case <-ctx.Done():
+			l.Printf("context has done")
+			return
+		}
+	}()
+
+	go func() {
+		l.Printf("start listening debug server on port %d", app.Config.DebugPort)
+		_ = http.ListenAndServe("0.0.0.0:"+strconv.Itoa(app.Config.DebugPort), nil)
+	}()
+
+	return <-errCh
+}
+
 func (app *BaseApp) Start(ctx context.Context) error {
 	l := logger.Tag("BaseApp.Start")
 	var err error
