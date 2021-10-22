@@ -26,6 +26,7 @@ func NewBodyPaginated(data interface{}, pager *Pager) *GeneralBody {
 			"total_pages": pager.GetTotalPages(),
 			"page_size":   pager.GetPageSize(),
 			"total":       pager.TotalRows,
+			"metadata":    pager.Metadata,
 		},
 	}
 }
