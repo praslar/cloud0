@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/goxp/cloud0/common"
-	"gitlab.com/goxp/cloud0/logger"
+	"gitlab.com/praslar/cloud0/common"
+	"gitlab.com/praslar/cloud0/logger"
 )
 
 func AccessLogMiddleware(env string) gin.HandlerFunc {

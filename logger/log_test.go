@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/goxp/cloud0/common"
+	"gitlab.com/praslar/cloud0/common"
 )
 
 type mockGetStringer func(string) string

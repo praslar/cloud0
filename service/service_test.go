@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/goxp/cloud0/common"
-	"gitlab.com/goxp/cloud0/logger"
+	"gitlab.com/praslar/cloud0/common"
+	"gitlab.com/praslar/cloud0/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

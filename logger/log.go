@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/sirupsen/logrus"
-	. "gitlab.com/goxp/cloud0/common"
+	. "gitlab.com/praslar/cloud0/common"
 )
 
 var (

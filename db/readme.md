@@ -24,7 +24,7 @@ MySql will close any connection that has unused more than 8 hours)
 package main
 
 import (
-  "gitlab.com/goxp/cloud0"
+  "gitlab.com/praslar/cloud0"
 )
 
 func main() {

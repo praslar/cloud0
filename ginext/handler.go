@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/goxp/cloud0/common"
+	"gitlab.com/praslar/cloud0/common"
 )
 
 type Request struct {

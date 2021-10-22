@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/goxp/cloud0/logger"
+	"gitlab.com/praslar/cloud0/logger"
 	"gorm.io/gorm"
 )
 

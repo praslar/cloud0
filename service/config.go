@@ -1,7 +1,7 @@
 package service
 
 import (
-	"gitlab.com/goxp/cloud0/db"
+	"gitlab.com/praslar/cloud0/db"
 )
 
 // AppConfig presents some basic app configuration

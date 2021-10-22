@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"gitlab.com/goxp/cloud0/logger"
+	"gitlab.com/praslar/cloud0/logger"
 )
 
 func TestMain(m *testing.M) {

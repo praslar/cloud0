@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/goxp/cloud0/common"
+	"gitlab.com/praslar/cloud0/common"
 )
 
 func TestAuthRequiredMiddleware(t *testing.T) {

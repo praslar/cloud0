@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"gitlab.com/goxp/cloud0/logger"
+	"gitlab.com/praslar/cloud0/logger"
 )
 
 func NotFoundHandler(c *gin.Context) {

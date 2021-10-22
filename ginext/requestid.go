@@ -3,7 +3,7 @@ package ginext
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	. "gitlab.com/goxp/cloud0/common"
+	. "gitlab.com/praslar/cloud0/common"
 )
 
 func RequestIDMiddleware(c *gin.Context) {
