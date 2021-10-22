@@ -23,6 +23,7 @@ type Pager struct {
 	Sort           string `json:"sort" form:"sort"`
 	TotalRows      int64  `json:"total"`
 	SortableFields []string
+	Metadata       interface{} `json:"metadata"`
 }
 
 // SortableFieldsGetter represent a contract to all models that can give us a list of fields
