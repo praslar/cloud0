@@ -23,6 +23,7 @@ type ApiError interface {
 type apiErr struct {
 	code    int
 	message string
+	status  int
 }
 
 func (e *apiErr) Code() int {
@@ -40,13 +41,16 @@ func (e *apiErr) Error() string {
 func NewError(code int, message string) error {
 	return &apiErr{code: code, message: message}
 }
+func NewErrorCode(code int, message string, status int) error {
+	return &apiErr{code: code, message: message, status: status}
+}
 
 func CreateErrorHandler(printStacks ...bool) gin.HandlerFunc {
 	printStack := false
 	if len(printStacks) > 0 {
 		printStack = printStacks[0]
 	}
-	
+
 	return func(c *gin.Context) {
 		l := logger.WithCtx(c, "ErrorHandler")
 
