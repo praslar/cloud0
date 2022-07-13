@@ -5,8 +5,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/sirupsen/logrus"
-	. "gitlab.com/praslar/cloud0/common"
+	. "github.com/praslar/cloud0/common"
 )
 
 var (

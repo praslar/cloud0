@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/praslar/cloud0/common"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/praslar/cloud0/common"
 )
 
 type mockGetStringer func(string) string

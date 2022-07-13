@@ -16,9 +16,9 @@ import (
 
 	"github.com/caarlos0/env/v6"
 	"github.com/gin-gonic/gin"
-	"gitlab.com/praslar/cloud0/db"
-	"gitlab.com/praslar/cloud0/ginext"
-	"gitlab.com/praslar/cloud0/logger"
+	"github.com/praslar/cloud0/db"
+	"github.com/praslar/cloud0/ginext"
+	"github.com/praslar/cloud0/logger"
 	"gorm.io/gorm"
 )
 

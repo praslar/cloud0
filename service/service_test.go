@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"gitlab.com/praslar/cloud0/common"
-	"gitlab.com/praslar/cloud0/logger"
+	"github.com/praslar/cloud0/common"
+	"github.com/praslar/cloud0/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -36,7 +36,7 @@ func TestStartService(t *testing.T) {
 
 	<-time.After(time.Millisecond * 100)
 
-	req, err := http.NewRequest(http.MethodGet, "http://"+app.Listener().Addr().String() + "/status", nil)
+	req, err := http.NewRequest(http.MethodGet, "http://"+app.Listener().Addr().String()+"/status", nil)
 	require.NoError(t, err)
 	rsp, err := http.DefaultClient.Do(req)
 	require.NoError(t, err)

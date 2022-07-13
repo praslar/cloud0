@@ -1,4 +1,4 @@
-module gitlab.com/praslar/cloud0
+module github.com/praslar/cloud0
 
 go 1.16
 

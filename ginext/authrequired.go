@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	. "gitlab.com/praslar/cloud0/common"
 )
 
 // AuthRequiredMiddleware is required the request has to have x-user-id in header

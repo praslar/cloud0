@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
-	"gitlab.com/praslar/cloud0/logger"
+	"github.com/praslar/cloud0/logger"
 )
 
 var (
