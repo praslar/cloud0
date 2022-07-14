@@ -26,12 +26,21 @@ type apiErr struct {
 	status  int
 }
 
+type ResponseJson struct {
+	Detail string `json:"detail"`
+	Status int    `json:"status"`
+}
+
 func (e *apiErr) Code() int {
 	return e.code
 }
 
 func (e *apiErr) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{"detail": e.Error()})
+	res := ResponseJson{
+		Detail: e.Error(),
+		Status: e.status,
+	}
+	return json.Marshal(res)
 }
 
 func (e *apiErr) Error() string {
