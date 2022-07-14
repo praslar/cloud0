@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	. "github.com/praslar/cloud0/common"
+	"github.com/sirupsen/logrus"
 )
 
 var (
