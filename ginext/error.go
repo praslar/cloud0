@@ -21,14 +21,16 @@ type ApiError interface {
 }
 
 type apiErr struct {
-	code    int
-	message string
-	status  int
+	code     int
+	message  string
+	status   int
+	metadata interface{}
 }
 
 type ResponseJson struct {
-	Detail string `json:"detail"`
-	Status int    `json:"status"`
+	Detail   string      `json:"detail"`
+	Status   int         `json:"status"`
+	Metadata interface{} `json:"metadata"`
 }
 
 func (e *apiErr) Code() int {
@@ -37,8 +39,9 @@ func (e *apiErr) Code() int {
 
 func (e *apiErr) MarshalJSON() ([]byte, error) {
 	res := ResponseJson{
-		Detail: e.Error(),
-		Status: e.status,
+		Detail:   e.Error(),
+		Status:   e.status,
+		Metadata: e.metadata,
 	}
 	return json.Marshal(res)
 }
@@ -50,8 +53,8 @@ func (e *apiErr) Error() string {
 func NewError(code int, message string) error {
 	return &apiErr{code: code, message: message}
 }
-func NewErrorCode(code int, message string, status int) error {
-	return &apiErr{code: code, message: message, status: status}
+func NewErrorCode(code int, message string, status int, metadata interface{}) error {
+	return &apiErr{code: code, message: message, status: status, metadata: metadata}
 }
 
 func CreateErrorHandler(printStacks ...bool) gin.HandlerFunc {
